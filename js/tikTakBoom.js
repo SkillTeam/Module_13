@@ -32,6 +32,8 @@ tikTakBoom = {
 
     run() {
         this.runGame.addEventListener('click', () => {
+            this.answerFields.disabled = true;
+            this.textFieldQuestion.style.color = "#ccc";
             this.createTimers(this.countOfPlayers);
             // this.timerFields = document.querySelectorAll('.timer-output');
             if (this.timerId) {
@@ -69,7 +71,7 @@ tikTakBoom = {
 
         this.timer();
         
-        this.gameStatusField.innerText += ` Вопрос игроку №${this.state}`;
+        this.gameStatusField.innerText = `Вопрос игроку №${this.state}`;
 
         const taskNumber = randomIntNumber(this.tasks.length - 1);
         
@@ -206,12 +208,20 @@ tikTakBoom = {
             playersTimers.removeChild(playersTimers.firstChild);
         }
         for (let i = 1; i <= playersCount; i++) {
+            const newDiv = document.createElement("div");
             const newTimer = document.createElement("div");
             newTimer.className = 'timer-output m-2 p-2 playerTimer';
             newTimer.id = `timerField${i}`;
             newTimer.innerText = "00:00";
             this.timerFields.push(newTimer.id);
-            playersTimers.appendChild(newTimer);
+
+            const newTimerText = document.createElement("div");
+            newTimerText.className = "m-2 p-0 text-center";
+            newTimerText.innerHTML = `игрок №${i}`;
+            newTimerText.id = "timerText";
+
+            newDiv.appendChild(newTimerText).appendChild(newTimer);
+            playersTimers.appendChild(newDiv);
         }
     },
 }

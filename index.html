@@ -14,7 +14,7 @@
             <div class="row d-flex justify-content-center mt-3">
                 <h1>Тик-так-бум</h1>
             </div>
-            <div class="row  d-flex justify-content-center">
+            <div class="row d-flex justify-content-center">
                 <span class="alert alert-primary" id="gameStatusField">Игра идёт</span>
             </div>
             <div class="row">
@@ -25,30 +25,31 @@
                             30:00
                         </div> -->
                     </div>
+                    <div class="m-0 p-0 text-center" id="counterText">готовность</div>
                     <div class="timer-output-wrapper">
-                        <div class="timer-output" id="counterField">
+                        <div class="timer-output rounded p-2" id="counterField">
                             0
                         </div>
                     </div>
                 </div>
             </div>
-            <fieldset id="answerFields" disabled>
-                <div class="row">
+            <fieldset id="answerFields">
+                <!-- <div class="row">
                     <h4 id="questionField"></h4>
                 </div>
                 <div class="row">
-                    <button id="answer1" class="btn btn-primary form-control text-left answer"></button>
+                    <button id="answer1" class="btn btn-primary form-control text-left"></button>
                 </div>
                 <div class="row">
-                    <button id="answer2" class="btn btn-danger form-control text-left answer"></button>
+                    <button id="answer2" class="btn btn-danger form-control text-left"></button>
                 </div>
                 <div class="row">
-                    <button id="answer3" class="btn btn-success form-control text-left answer"></button>
-                </div>
+                    <button id="answer3" class="btn btn-success form-control text-left"></button>
+                </div> -->
             </fieldset>
             <div class="row mt-5 game-control">
                 <button type="button" class="btn btn-outline-secondary" id="startGameBtn">Новая игра</button>
-                <button type="button" class="btn btn-outline-secondary" id="finishGameBtn" disabled>Завершить</button>
+                <button type="button" class="btn btn-outline-secondary" id="finishGameBtn" hidden>Завершить</button>
             </div>
         </div>
     </div>

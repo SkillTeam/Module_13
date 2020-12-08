@@ -14,7 +14,7 @@ tikTakBoom = {
         countDownId,
         questionDelayId,
     ) {
-        this.countOfPlayers = 2;
+        this.countOfPlayers = 3;
         this.timerField = null;
         this.timerFields = [undefined];
         this.counterField = counterField;

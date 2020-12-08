@@ -4,10 +4,9 @@ body {
 
 .timer-output{
     width: 200px;
-    background: #222;
-    color: darkred;
-    padding: 16px 8px;
-    font-size: 64px;
+    background: #444;
+    color: rgb(190, 2, 2);
+    font-size: 54px;
     text-align: center;
     line-height: 1;
     user-select: none;
@@ -26,7 +25,17 @@ body {
     width: 130px;
 }
 
+#counterField {
+    width: 90px;
+    font-size: 32px;
+}
+
+#counterText {
+    font-size: 14px;
+    color: #777;
+}
+
 #timerText {
     font-size: 18px;
-    color: #aaa;
+    color: #777;
 }

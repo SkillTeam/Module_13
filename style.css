@@ -25,3 +25,8 @@ body {
 .game-control button {
     width: 130px;
 }
+
+#timerText {
+    font-size: 18px;
+    color: #aaa;
+}

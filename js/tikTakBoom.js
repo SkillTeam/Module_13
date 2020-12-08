@@ -1,47 +1,65 @@
 tikTakBoom = {
     init(
         tasks,
-        // timerField,
         counterField,
         gameStatusField,
-        textFieldQuestion,
-        textFieldAnswer1,
-        textFieldAnswer2,
-        textFieldAnswer3,
+        // textFieldQuestion,
+        // textFieldAnswer1,
+        // textFieldAnswer2,
+        // textFieldAnswer3,
         answerFields,
-        runGame,
+        runGameBtn,
+        endGameBtn,
         timerId,
+        countDownId,
+        questionDelayId,
     ) {
-        //this.boomTimer = [0, 30, 30, 30, 30]; // went tu run
         this.countOfPlayers = 2;
-        //this.tasks = JSON.parse(tasks); // went tu run
-        // this.timerField = timerField;
         this.timerField = null;
         this.timerFields = [undefined];
         this.counterField = counterField;
         this.gameStatusField = gameStatusField;
-        this.textFieldQuestion = textFieldQuestion;
-        this.textFieldAnswer1 = textFieldAnswer1;
-        this.textFieldAnswer2 = textFieldAnswer2;
-        this.textFieldAnswer3 = textFieldAnswer3;
+        // this.textFieldQuestion = textFieldQuestion;
+        // this.textFieldAnswer1 = textFieldAnswer1;
+        // this.textFieldAnswer2 = textFieldAnswer2;
+        // this.textFieldAnswer3 = textFieldAnswer3;
         this.answerFields = answerFields;
-        this.runGame = runGame;
+        this.runGameBtn = runGameBtn;
+        this.endGameBtn = endGameBtn;
         this.timerId = timerId;
+        this.countDownId = countDownId;
+        this.questionDelayId = questionDelayId;
+        this.endGame = document.getElementById('finishGameBtn').addEventListener('click', () => {
+            //alert('helli');
+            if (this.timerId) {
+                clearTimeout(this.timerId);
+            }
+            if (this.countDownId) {
+                clearTimeout(this.countDownId);
+            }
+            if (this.questionDelayId) {
+                clearTimeout(this.questionDelayId);
+            }
+            this.finish('lose');
+        });
         this.needRightAnswers = 3;
+        this.currentTaskResults = {};
+        this.answerListener = {};
     },
 
     run() {
-        this.runGame.addEventListener('click', () => {
-            this.answerFields.disabled = true;
-            this.textFieldQuestion.style.color = "#ccc";
+        this.runGameBtn.addEventListener('click', () => {
+            this.runGameBtn.hidden = true;
+            this.endGameBtn.hidden = false;
+            this.answerListener = {};
+            this.removeAllChildes(this.answerFields);
             this.createTimers(this.countOfPlayers);
-            // this.timerFields = document.querySelectorAll('.timer-output');
             if (this.timerId) {
                 clearTimeout(this.timerId);
             }
             this.gameStatusField.innerText = "Игра идёт."
             this.tasks = JSON.parse(tasks);
-            this.playersTimers = [undefined, 30, 30, 30, 30];
+            this.playersTimers = [0, 30, 30, 30, 30];
             this.state = 0;
             this.boomTimer = this.playersTimers[this.state - 1];
             this.counter = 3; //delay before next question
@@ -53,84 +71,58 @@ tikTakBoom = {
     },
 
     turnOn() {
-        // console.log(this.timerFields);
-        // console.log(document.getElementById(this.timerFields[this.state]));
         this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
-        console.log(this.state);
         this.timerField = document.getElementById(this.timerFields[this.state]);
-        
-        // this.timerField = document.getElementById(this.timerFields[this.state - 1]);
-        // this.boomTimer = this.playersTimers[this.state - 1];
-        console.log(this.playersTimers);
-        this.boomTimer = this.playersTimers[this.state];
-        console.log(`player ${this.state} playersTimers ${this.playersTimers[this.state]} boomTimer ${this.boomTimer}`);
-        
+        this.boomTimer = this.playersTimers[this.state];      
         if (this.timerId) {
             clearTimeout(this.timerId);
         }
-
-        this.timer();
-        
+        this.timer();      
         this.gameStatusField.innerText = `Вопрос игроку №${this.state}`;
-
-        const taskNumber = randomIntNumber(this.tasks.length - 1);
-        
+        const taskNumber = randomIntNumber(this.tasks.length - 1);    
         this.printQuestion(this.tasks[taskNumber]);
-
         this.tasks.splice(taskNumber, 1);
-
-        // this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
-
     },
 
     turnOff(value) {
-        // this.playersTimers[this.state - 1] = this.boomTimer;
-        // this.boomTimer = this.playersTimers[this.state - 1];
-
         if (this.timerId) {
             clearTimeout(this.timerId);
         }
-
-        if (this.currentTask[value].result) {
+        if (this.currentTaskResults[value]) {
             this.gameStatusField.innerText = 'Верно!';
             this.rightAnswers += 1;
+            console.log(this.rightAnswers);
         } else {
             this.gameStatusField.innerText = 'Неверно!';
         }
         if (this.rightAnswers < this.needRightAnswers) {
             if (this.tasks.length === 0) {
                 this.finish('lose');
-                
+                this.runGameBtn.hidden = false;
+                this.endGameBtn.hidden = true;
             } else {
                 this.displayQuestion();
             }
         } else {
             this.finish('won');
+            this.runGameBtn.hidden = false;
+            this.endGameBtn.hidden = true;
         }
-
-        this.textFieldAnswer1.removeEventListener('click', answer1);
-        this.textFieldAnswer2.removeEventListener('click', answer2);
-        this.textFieldAnswer3.removeEventListener('click', answer3);
-
-        this.answerFields.disabled = true;
-        this.textFieldQuestion.style.color = "#ccc";
+        for (key of Object.keys(this.currentTaskResults)) {
+            let answerField = document.getElementById(`${key}`);
+            answerField.removeEventListener('click', this.answerListener[`${key}`]);
+        }
     },
 
     printQuestion(task) {
-        this.textFieldQuestion.innerText = task.question;
-            this.textFieldAnswer1.innerText = task.answer1.value;
-            this.textFieldAnswer2.innerText = task.answer2.value;
-            this.textFieldAnswer3.innerText = task.answer3.value;
+        this.createQuestionFields(task);
 
-            this.textFieldAnswer1.addEventListener('click', answer1 = () => {
-                this.turnOff('answer1');
+        for (key of Object.keys(this.currentTaskResults)) {
+            let answerField = document.getElementById(`${key}`);
+            answerField.addEventListener('click', this.answerListener[`${key}`] = () => {
+                this.turnOff(answerField.id);
             });
-            this.textFieldAnswer2.addEventListener('click', answer2 = () => {
-                this.turnOff('answer2');
-            });this.textFieldAnswer3.addEventListener('click', answer3 = () => {
-                this.turnOff('answer3');
-            });
-            this.currentTask = task;
+        }
     },
 
     finish(result = 'lose') {
@@ -142,18 +134,14 @@ tikTakBoom = {
             this.gameStatusField.innerText = `Вы выиграли!`;
             this.answerFields.disabled = true;
         }
-
-        this.textFieldQuestion.innerText = ``;
-        this.textFieldAnswer1.innerText = ``;
-        this.textFieldAnswer2.innerText = ``;
-        this.textFieldAnswer3.innerText = ``;
-
+        this.clearQuestionFields(answerFields);
+        this.runGameBtn.hidden = false;
+        this.endGameBtn.hidden = true;
         console.log(this);
     },
 
     timer() {
         if (this.state) {
-            this.boomTimer -= 1;
             let sec = this.boomTimer % 60;
             let min = (this.boomTimer - sec) / 60;
             sec = (sec >= 10) ? sec : '0' + sec;
@@ -165,7 +153,8 @@ tikTakBoom = {
                         this.timer()
                     },
                     1000,
-                )
+                );
+                this.boomTimer -= 1;
             } else {
                 this.finish('lose');
             }
@@ -174,10 +163,9 @@ tikTakBoom = {
 
     questionDelay(delay = 3000) {
         Promise.resolve()
-        .then(() => setTimeout(() => {
+        .then(() => this.questionDelayId = setTimeout(() => {
             this.turnOn();
             this.answerFields.disabled = false;
-            this.textFieldQuestion.style.color = "black";
         }, delay));
     },
 
@@ -185,7 +173,7 @@ tikTakBoom = {
         this.counter -= 1;
         this.counterField.innerText = this.counter;
         if (this.counter > 0) {
-            setTimeout(
+            this.countDownId = setTimeout(
                 () => {
                     this.countDown();
                     this.playersTimers[this.state] = this.boomTimer;
@@ -204,24 +192,64 @@ tikTakBoom = {
 
     createTimers(playersCount = 1) {
         let playersTimers = document.getElementById("playersTimers");
-        while (playersTimers.firstChild) {
-            playersTimers.removeChild(playersTimers.firstChild);
-        }
+        this.removeAllChildes(playersTimers);
         for (let i = 1; i <= playersCount; i++) {
             const newDiv = document.createElement("div");
             const newTimer = document.createElement("div");
-            newTimer.className = 'timer-output m-2 p-2 playerTimer';
+            newTimer.className = 'timer-output rounded m-2 p-2 playerTimer';
             newTimer.id = `timerField${i}`;
-            newTimer.innerText = "00:00";
+            newTimer.innerText = "00:30";
             this.timerFields.push(newTimer.id);
-
             const newTimerText = document.createElement("div");
             newTimerText.className = "m-2 p-0 text-center";
             newTimerText.innerHTML = `игрок №${i}`;
             newTimerText.id = "timerText";
-
             newDiv.appendChild(newTimerText).appendChild(newTimer);
             playersTimers.appendChild(newDiv);
         }
     },
+
+    taskSize(task) {
+        let size = -1;
+        for (let item in task) {
+            if (task.hasOwnProperty) {
+                size++;
+            } 
+        }
+        return size;
+    },
+
+    createQuestionFields(task) {
+        this.removeAllChildes(this.answerFields);
+        this.currentTaskResults = {};
+        const size = this.taskSize(task);
+        const answerDiv = document.createElement("div");
+        answerDiv.className = "row";
+        const answerHeader = document.createElement("h4");
+        answerHeader.id = "questionField";
+        answerHeader.innerText = task.question;
+        this.answerFields.appendChild(answerDiv).appendChild(answerHeader);
+        for (let i = 1; i <= size; i++) {
+            const newDiv = document.createElement("div");
+            newDiv.className = "row";
+            const newButton = document.createElement("button");
+            newButton.className = "btn btn-outline-dark form-control text-left";
+            newButton.id = `answer${i}`;
+            newButton.innerText = task[`answer${i}`].value;
+            this.answerFields.appendChild(newDiv).appendChild(newButton);
+            this.currentTaskResults[`answer${i}`] = task[`answer${i}`].result;
+        }
+        console.log(this.currentTaskResults);
+    },
+
+    removeAllChildes(parentNode){
+        while (parentNode.firstChild) {
+            parentNode.removeChild(parentNode.firstChild);
+        }
+    },
+
+    clearQuestionFields(parentNode){
+       var ndList = parentNode.childNodes;
+       ndList.forEach(child => child.firstChild.innerText = '');
+    },   
 }

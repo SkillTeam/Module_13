@@ -50,6 +50,7 @@ body {
     margin-top: 90px;
     align-items: center;
     margin-bottom: 10px;
+    padding: 0;
     
 }
 
@@ -67,10 +68,34 @@ body {
     height: 48px;
     color: black;
     font-size: 23px;
+    margin-top: 30px;
+    border-radius: 0;
 }
 
 input {
     border:0;
-    
 }
 
+#gamepage {
+    display: none;
+    background-color: rgba(245, 245, 245, 0.774);
+    margin-top: 90px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+#answerFields {
+    display: none;
+}
+
+#finishGameBtn {
+    width: 100%;
+    border: 0;
+    height: 48px;
+    color: black;
+    font-size: 23px;
+    margin-top: 30px;
+    border-radius: 0;
+    
+}

@@ -1,5 +1,14 @@
+*{
+    padding: 0;
+    margin: 0;
+}
 body {
     font-family: 'Share Tech Mono', monospace;
+    background-image: url(./img/yadernyy-vzryv-nochyu.jpg);
+    align-items: center;
+    background-size: cover;
+    height: 100vh;
+
 }
 
 .timer-output{
@@ -21,10 +30,6 @@ body {
     margin: 12px;
 }
 
-.game-control button {
-    width: 130px;
-}
-
 #counterField {
     width: 90px;
     font-size: 32px;
@@ -39,3 +44,33 @@ body {
     font-size: 18px;
     color: #777;
 }
+
+#startpage {
+    background-color: rgba(245, 245, 245, 0.774);
+    margin-top: 90px;
+    align-items: center;
+    margin-bottom: 10px;
+    
+}
+
+.title{
+    padding: 10px 30px 30px 30px;
+    color: black;
+    
+}
+.inf {
+    margin-left: 30px ;
+}
+#startGameBtn {
+    width: 100%;
+    border: 0;
+    height: 48px;
+    color: black;
+    font-size: 23px;
+}
+
+input {
+    border:0;
+    
+}
+

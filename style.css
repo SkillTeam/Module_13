@@ -48,9 +48,10 @@ body {
 
 #startpage {
     background-color: rgba(245, 245, 245, 0.774);
-    margin-top: 40px;
+    margin-top: 60px;
     align-items: center;
     margin-bottom: 20px;
+    border-radius: 5px;
 }
 
 .title{
@@ -74,4 +75,8 @@ input {
     border:0;
     width: 100px;
     text-align: center;
+}
+
+#gameStatusField {
+    background-color: antiquewhite;
 }

@@ -14,7 +14,6 @@ tikTakBoom = {
         countDownId,
         questionDelayId,
     ) {
-        this.countOfPlayers = 2;
         this.timerField = null;
         this.timerFields = [undefined];
         this.counterField = counterField;
@@ -30,7 +29,6 @@ tikTakBoom = {
         this.countDownId = countDownId;
         this.questionDelayId = questionDelayId;
         this.endGame = document.getElementById('finishGameBtn').addEventListener('click', () => {
-            //alert('helli');
             if (this.timerId) {
                 clearTimeout(this.timerId);
             }
@@ -45,12 +43,19 @@ tikTakBoom = {
         this.needRightAnswers = 3;
         this.currentTaskResults = {};
         this.answerListener = {};
+        this.aboutGame = document.getElementById('aboutGame');
+        this.gameArea = document.getElementById('gameArea');
     },
 
     run() {
         this.runGameBtn.addEventListener('click', () => {
+            this.playersTimers = [0];
+            this.countOfPlayers = Number(document.getElementById('people').value);
+            this.setTimer = Number(document.getElementById('time').value);
+            this.aboutGame.hidden = true;
             this.runGameBtn.hidden = true;
             this.endGameBtn.hidden = false;
+            this.gameArea.hidden = false;
             this.answerListener = {};
             this.removeAllChildes(this.answerFields);
             this.createTimers(this.countOfPlayers);
@@ -59,7 +64,10 @@ tikTakBoom = {
             }
             this.gameStatusField.innerText = "Игра идёт."
             this.tasks = JSON.parse(tasks);
-            this.playersTimers = [0, 30, 30, 30, 30];
+            for(let i = 1; i<=this.countOfPlayers; i++) {
+                this.playersTimers[i] = this.setTimer;
+            }
+            //this.playersTimers = [0, 30, 30, 30, 30];
             this.state = 0;
             this.boomTimer = this.playersTimers[this.state];
             this.counter = 3; //delay before next question
@@ -116,7 +124,6 @@ tikTakBoom = {
 
     printQuestion(task) {
         this.createQuestionFields(task);
-
         for (key of Object.keys(this.currentTaskResults)) {
             let answerField = document.getElementById(`${key}`);
             answerField.addEventListener('click', this.answerListener[`${key}`] = () => {
@@ -198,7 +205,7 @@ tikTakBoom = {
             const newTimer = document.createElement("div");
             newTimer.className = 'timer-output rounded m-2 p-2 playerTimer';
             newTimer.id = `timerField${i}`;
-            newTimer.innerText = "00:30";
+            newTimer.innerText = "00:00";
             this.timerFields.push(newTimer.id);
             const newTimerText = document.createElement("div");
             newTimerText.className = "m-2 p-0 text-center";
@@ -251,5 +258,5 @@ tikTakBoom = {
     clearQuestionFields(parentNode){
        var ndList = parentNode.childNodes;
        ndList.forEach(child => child.firstChild.innerText = '');
-    },   
+    },
 }

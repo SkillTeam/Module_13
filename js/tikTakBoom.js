@@ -61,7 +61,7 @@ tikTakBoom = {
             this.tasks = JSON.parse(tasks);
             this.playersTimers = [0, 30, 30, 30, 30];
             this.state = 0;
-            this.boomTimer = this.playersTimers[this.state - 1];
+            this.boomTimer = this.playersTimers[this.state];
             this.counter = 3; //delay before next question
             this.rightAnswers = 0;
             // this.turnOn(); // went to questionDelay()

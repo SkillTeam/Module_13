@@ -81,7 +81,7 @@ tikTakBoom = {
             this.displayQuestion();
             this.playerFailedAnswersCount = [0, 0, 0, 0, 0];
             this.playerRightAnswersCount = [0, 0, 0, 0, 0];
-            this.correctAnswersField.innerText = "0";
+            this.correctAnswersField.innerText = "Игрок №: верно: 0";
             this.wrongAnswersField.innerText = "0";
             this.totalCorrectField.innerText = "0";
             this.needRightAnswersField.innerText = this.needRightAnswers;
@@ -103,6 +103,10 @@ tikTakBoom = {
             this.printQuestion(this.tasks[taskNumber]);
             this.tasks.splice(taskNumber, 1);
         }
+        this.showPlayerState();
+        if (this.totalTime === 0 && this.rightAnswers < this.needRightAnswers) {
+            this.finish('lose');
+        }
     },
 
     turnOff(value) {
@@ -114,13 +118,14 @@ tikTakBoom = {
             this.gameStatusField.innerText = 'Верно!';
             this.rightAnswers += 1;
         } else {
-            this.gameStatusField.innerText = 'Неверно!';
+            if (this.boomTimer > 0) {
+                this.gameStatusField.innerText = 'Неверно!';
+            }
         }
         if (this.rightAnswers < this.needRightAnswers ) {
             if (this.tasks.length === 0 || this.totalTime === 0) {
                 this.finish('lose');
             } else {
-                console.log(`total time ${this.totalTime}`);
                 this.displayQuestion();
             }
         } else {
@@ -141,7 +146,7 @@ tikTakBoom = {
             let answerField = document.getElementById(`${key}`);
             answerField.addEventListener('click', this.answerListener[`${key}`] = () => {
                 this.turnOff(answerField.id);
-            });
+            }); 
         }
     },
 
@@ -162,7 +167,6 @@ tikTakBoom = {
     },
 
     timer() {
-        console.log(`timer ${this.totalTime}`);
         if (this.state) {
             if (this.totalTime > 0 && this.boomTimer > 0) {
                 this.timerId = setTimeout(
@@ -212,7 +216,6 @@ tikTakBoom = {
         } else {
             this.counter = 3;
         }
-        console.log(`countDown ${this.totalTime}`);
     },
 
     displayQuestion() {
@@ -288,17 +291,18 @@ tikTakBoom = {
             this.playerFailedAnswersCount[this.state]++;
             this.boomTimer > 5 ? this.boomTimer -= 5 : this.boomTimer = 0;
         } else {
-            this.playerFailedAnswersCount[this.state] = 0;
+            //this.playerFailedAnswersCount[this.state] = 0; 
             this.playerRightAnswersCount[this.state] ++;
             this.boomTimer +=5;
         }
         this.playersTimers[this.state] = this.boomTimer;
         this.totalTime = this.arrayItemsSum(this.playersTimers);
-        this.correctAnswersField.innerText = this.playerRightAnswersCount[this.state];
-        this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
-        this.totalCorrectField.innerText = this.arrayItemsSum(this.playerRightAnswersCount);
+        // this.correctAnswersField.innerText = `Игрок №${this.state}: верно: ` + this.playerRightAnswersCount[this.state];
+        // this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
+        // this.totalCorrectField.innerText = this.rightAnswers;
+        this.showPlayerState();
         this.timerField.innerText = this.timeFormat(this.boomTimer);
-        if (this.playerFailedAnswersCount[this.state] === 3 || !this.boomTimer) {
+        if (this.playerFailedAnswersCount[this.state] > 2 || !this.boomTimer) {
             this.boomTimer = 0;
             this.timerField.innerText = "BooM";
             this.answerFields.disabled = true;
@@ -306,7 +310,8 @@ tikTakBoom = {
     },
 
     arrayItemsSum(arr) {
-        return arr.reduce(function(a, b) {
+        let sum = 0;
+        return sum = arr.reduce(function(a, b) {
             return a + b;
         });
     },
@@ -320,7 +325,6 @@ tikTakBoom = {
     },
 
     nextPlayer() {
-        console.log(`next player ${this.totalTime}`);
         do {
             this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
             this.totalTime = this.arrayItemsSum(this.playersTimers);
@@ -328,5 +332,11 @@ tikTakBoom = {
                 this.counter = 0;
             }
         } while (!this.playersTimers[this.state] && this.totalTime > 0);
+    },
+
+    showPlayerState() {
+        this.correctAnswersField.innerText = `Игрок №${this.state}: верно: ` + this.playerRightAnswersCount[this.state];
+        this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
+        this.totalCorrectField.innerText = this.rightAnswers;
     },
 }

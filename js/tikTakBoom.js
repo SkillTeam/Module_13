@@ -107,13 +107,15 @@ tikTakBoom = {
         if (this.timerId) {
             clearTimeout(this.timerId);
         }
-        this.countFailedAnswers(this.currentTaskResults[value]);
+        this.answerHandler(this.currentTaskResults[value]);
         if (this.currentTaskResults[value]) {
             this.gameStatusField.innerText = 'Верно!';
             this.rightAnswers += 1;
+            // this.boomTimer += 5
             console.log(this.rightAnswers);
         } else {
             this.gameStatusField.innerText = 'Неверно!';
+            // this.boomTimer > 5 ? this.boomTimer -= 5 : this.boomTimer = 0;
         }
         if (this.rightAnswers < this.needRightAnswers) {
             if (this.tasks.length === 0 || this.playerFailedAnswersCount[this.state] > 2) {
@@ -161,11 +163,12 @@ tikTakBoom = {
 
     timer() {
         if (this.state) {
-            let sec = this.boomTimer % 60;
-            let min = (this.boomTimer - sec) / 60;
-            sec = (sec >= 10) ? sec : '0' + sec;
-            min = (min >= 10) ? min : '0' + min;
-            this.timerField.innerText = `${min}:${sec}`;
+            // let sec = this.boomTimer % 60;
+            // let min = (this.boomTimer - sec) / 60;
+            // sec = (sec >= 10) ? sec : '0' + sec;
+            // min = (min >= 10) ? min : '0' + min;
+            // this.timerField.innerText = `${min}:${sec}`;
+            this.timerField.innerText = this.timeFormat(this.boomTimer);
             if (this.boomTimer > 0) {
                 this.timerId = setTimeout(
                     () => {
@@ -272,21 +275,32 @@ tikTakBoom = {
        ndList.forEach(child => child.firstChild.innerText = '');
     },
 
-    countFailedAnswers(answer) {
+    answerHandler(answer) {
         if (!answer) {
             this.playerFailedAnswersCount[this.state]++;
+            this.boomTimer > 5 ? this.boomTimer -= 5 : this.boomTimer = 0;
         } else {
             this.playerFailedAnswersCount[this.state] = 0;
             this.playerRightAnswersCount[this.state] ++;
+            this.boomTimer +=5;
         }
         this.correctAnswersField.innerText = this.playerRightAnswersCount[this.state];
         this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
         this.totalCorrectField.innerText = this.playerRightAnswersCount.reduce(function(a, b) {return a + b});
+        this.timerField.innerText = this.timeFormat(this.boomTimer);
     },
 
     totalCorrect(arr) {
         arr.reduce(function(a, b) {
             return a + b;
         });
+    },
+
+    timeFormat(value) {
+        let sec = value % 60;
+        let min = (value - sec) / 60;
+        sec = (sec >= 10) ? sec : '0' + sec;
+        min = (min >= 10) ? min : '0' + min;
+        return `${min}:${sec}`;
     }
 }

@@ -111,10 +111,10 @@ tikTakBoom = {
     },
 
     turnOff(value) {
+
         if (this.timerId) {
             clearTimeout(this.timerId);
         }
-        this.answerHandler(this.currentTaskResults[value]);
         if (this.currentTaskResults[value]) {
             this.gameStatusField.innerText = 'Верно!';
             this.rightAnswers += 1;
@@ -136,7 +136,9 @@ tikTakBoom = {
         }
         for (key of Object.keys(this.currentTaskResults)) {
             let answerField = document.getElementById(`${key}`);
-            answerField.removeEventListener('click', this.answerListener[`${key}`]);
+            if (this.answerListener[`${key}`]) {
+                answerField.removeEventListener('click', this.answerListener[`${key}`]);
+            }
         }
     },
 
@@ -145,6 +147,7 @@ tikTakBoom = {
         for (key of Object.keys(this.currentTaskResults)) {
             let answerField = document.getElementById(`${key}`);
             answerField.addEventListener('click', this.answerListener[`${key}`] = () => {
+                this.answerHandler(this.currentTaskResults[value]);
                 this.turnOff(answerField.id);
             });
         }
@@ -168,7 +171,7 @@ tikTakBoom = {
 
     timer() {
         if (this.state) {
-            this.timerField.innerText = this.timeFormat(this.boomTimer);
+            // this.timerField.innerText = this.timeFormat(this.boomTimer);
             if (this.totalTime > 0 && this.boomTimer > 0) {
                 this.timerId = setTimeout(
                     () => {
@@ -179,10 +182,13 @@ tikTakBoom = {
                 this.boomTimer -= 1;
                 this.totalTime -= 1;
             } else if (this.totalTime <= 0){
-                //clearTimeout(this.countDownId);
                 this.finish('lose');
-            } 
+            }
+            this.timerField.innerText = this.timeFormat(this.boomTimer);
             if (this.boomTimer <= 0) {
+                this.timerField.innerText = "BooM";
+                this.clearQuestionFields(answerFields);
+                this.gameStatusField.innerText = 'BooM';
                 this.turnOff();
             }
         } 
@@ -191,13 +197,18 @@ tikTakBoom = {
     questionDelay(delay = 3000) {
         Promise.resolve()
         .then(() => this.questionDelayId = setTimeout(() => {
-            this.turnOn();
+            if (this.totalTime > 0) {
+                this.turnOn();
+            }
             this.answerFields.disabled = false;
         }, delay));
     },
 
     countDown() {
         this.counter -= 1;
+        if (!this.totalTime) {
+            this.counter = 0;
+        }
         this.counterField.innerText = this.counter;
         if (this.counter > 0) {
             this.countDownId = setTimeout(
@@ -293,10 +304,13 @@ tikTakBoom = {
         this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
         this.totalCorrectField.innerText = this.arrayItemsSum(this.playerRightAnswersCount);
         this.timerField.innerText = this.timeFormat(this.boomTimer);
-        if (this.playerFailedAnswersCount[this.state] === 3 || !this.boomTimer) {
+        if (this.playerFailedAnswersCount[this.state] === 3) {
             this.boomTimer = 0;
             this.timerField.innerText = "BooM";
         }
+        // if (!this.totalTime && this.rightAnswers < this.needRightAnswers) {         
+        //     this.finish('lose');
+        // }
     },
 
     arrayItemsSum(arr) {
@@ -317,5 +331,8 @@ tikTakBoom = {
         do {
             this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
         } while ((!this.playersTimers[this.state] || !this.totalTime) && this.totalTime > 0);
+        // if (!this.totalTime && this.rightAnswers < this.needRightAnswers) {         
+        //     this.finish('lose');
+        // }
     },
 }

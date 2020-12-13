@@ -73,10 +73,25 @@ body {
 
 input {
     border:0;
-    width: 100px;
+    width: 150px;
     text-align: center;
 }
 
 #gameStatusField {
     background-color: antiquewhite;
 }
+
+#playerStatus {
+    width: 90%;
+    color: black;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* #playerStatusTable {
+    width: 160px;
+    
+    left: calc(100% - 170px);
+    top: 60px;
+    background-color: rgba(245, 245, 245, 0.774);
+} */

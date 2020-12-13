@@ -13,6 +13,10 @@ window.onload = function()
         document.getElementById('startGameBtn'),
         document.getElementById('finishGameBtn'),
         timerId,
+        document.getElementById('correctAnswersField'),
+        document.getElementById('wrongAnswersField'),
+        document.getElementById('needRightAnswersField'),
+        document.getElementById('totalCorrectField'),
     )
     tikTakBoom.run();
 }

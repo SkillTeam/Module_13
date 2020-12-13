@@ -53,6 +53,7 @@ tikTakBoom = {
         this.answerListener = {};
         this.aboutGame = document.getElementById('aboutGame');
         this.gameArea = document.getElementById('gameArea');
+        this.totalTime = 0;
     },
 
     run() {
@@ -66,16 +67,21 @@ tikTakBoom = {
             this.gameArea.hidden = false;
             this.answerListener = {};
             this.removeAllChildes(this.answerFields);
-            this.createTimers(this.countOfPlayers);
-            if (this.timerId) {
-                clearTimeout(this.timerId);
-            }
+            // this.createTimers(this.countOfPlayers);
+            // if (this.timerId) {
+            //     clearTimeout(this.timerId);
+            // }
             this.gameStatusField.innerText = "Игра идёт."
             this.tasks = JSON.parse(tasks);
-            for(let i = 1; i<=this.countOfPlayers; i++) {
+            for (let i = 1; i<=this.countOfPlayers; i++) {
                 this.playersTimers[i] = this.setTimer;
             }
+            this.createTimers(this.countOfPlayers);
             //this.playersTimers = [0, 30, 30, 30, 30];
+            // this.totalTime = this.playersTimers.reduce(function (a, b) {
+            //     return a+b;
+            // });
+            this.totalTime = this.arrayItemsSum(this.playersTimers);
             this.state = 0;
             this.boomTimer = this.playersTimers[this.state];
             this.counter = 3; //delay before next question
@@ -90,7 +96,8 @@ tikTakBoom = {
     },
 
     turnOn() {
-        this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
+        //this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
+        this.nextPlayer();
         this.timerField = document.getElementById(this.timerFields[this.state]);
         this.boomTimer = this.playersTimers[this.state];      
         if (this.timerId) {
@@ -111,11 +118,8 @@ tikTakBoom = {
         if (this.currentTaskResults[value]) {
             this.gameStatusField.innerText = 'Верно!';
             this.rightAnswers += 1;
-            // this.boomTimer += 5
-            console.log(this.rightAnswers);
         } else {
             this.gameStatusField.innerText = 'Неверно!';
-            // this.boomTimer > 5 ? this.boomTimer -= 5 : this.boomTimer = 0;
         }
         if (this.rightAnswers < this.needRightAnswers) {
             if (this.tasks.length === 0 || this.playerFailedAnswersCount[this.state] > 2) {
@@ -150,6 +154,7 @@ tikTakBoom = {
         if (result === 'lose') {
             this.gameStatusField.innerText = `Вы проиграли!`;
             this.answerFields.disabled = true;
+            this.timerField.innerText = "BooM";
         }
         if (result === 'won') {
             this.gameStatusField.innerText = `Вы выиграли!`;
@@ -163,13 +168,8 @@ tikTakBoom = {
 
     timer() {
         if (this.state) {
-            // let sec = this.boomTimer % 60;
-            // let min = (this.boomTimer - sec) / 60;
-            // sec = (sec >= 10) ? sec : '0' + sec;
-            // min = (min >= 10) ? min : '0' + min;
-            // this.timerField.innerText = `${min}:${sec}`;
             this.timerField.innerText = this.timeFormat(this.boomTimer);
-            if (this.boomTimer > 0) {
+            if (this.totalTime > 0 && this.boomTimer > 0) {
                 this.timerId = setTimeout(
                     () => {
                         this.timer()
@@ -177,8 +177,13 @@ tikTakBoom = {
                     1000,
                 );
                 this.boomTimer -= 1;
-            } else {
+                this.totalTime -= 1;
+            } else if (this.totalTime <= 0){
+                //clearTimeout(this.countDownId);
                 this.finish('lose');
+            } 
+            if (this.boomTimer <= 0) {
+                this.turnOff();
             }
         } 
     },
@@ -220,7 +225,7 @@ tikTakBoom = {
             const newTimer = document.createElement("div");
             newTimer.className = 'timer-output rounded m-2 p-2 playerTimer';
             newTimer.id = `timerField${i}`;
-            newTimer.innerText = "00:00";
+            newTimer.innerText = this.timeFormat(this.setTimer);//"00:00";
             this.timerFields.push(newTimer.id);
             const newTimerText = document.createElement("div");
             newTimerText.className = "m-2 p-0 text-center";
@@ -286,12 +291,16 @@ tikTakBoom = {
         }
         this.correctAnswersField.innerText = this.playerRightAnswersCount[this.state];
         this.wrongAnswersField.innerText =  this.playerFailedAnswersCount[this.state];
-        this.totalCorrectField.innerText = this.playerRightAnswersCount.reduce(function(a, b) {return a + b});
+        this.totalCorrectField.innerText = this.arrayItemsSum(this.playerRightAnswersCount);
         this.timerField.innerText = this.timeFormat(this.boomTimer);
+        if (this.playerFailedAnswersCount[this.state] === 3 || !this.boomTimer) {
+            this.boomTimer = 0;
+            this.timerField.innerText = "BooM";
+        }
     },
 
-    totalCorrect(arr) {
-        arr.reduce(function(a, b) {
+    arrayItemsSum(arr) {
+        return arr.reduce(function(a, b) {
             return a + b;
         });
     },
@@ -302,5 +311,11 @@ tikTakBoom = {
         sec = (sec >= 10) ? sec : '0' + sec;
         min = (min >= 10) ? min : '0' + min;
         return `${min}:${sec}`;
-    }
+    },
+
+    nextPlayer() {
+        do {
+            this.state = (this.state === this.countOfPlayers) ? 1 : this.state + 1;
+        } while ((!this.playersTimers[this.state] || !this.totalTime) && this.totalTime > 0);
+    },
 }

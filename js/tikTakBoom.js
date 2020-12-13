@@ -111,7 +111,7 @@ tikTakBoom = {
     },
 
     turnOff(value) {
-
+        this.answerHandler(this.currentTaskResults[value]);
         if (this.timerId) {
             clearTimeout(this.timerId);
         }
@@ -147,7 +147,6 @@ tikTakBoom = {
         for (key of Object.keys(this.currentTaskResults)) {
             let answerField = document.getElementById(`${key}`);
             answerField.addEventListener('click', this.answerListener[`${key}`] = () => {
-                this.answerHandler(this.currentTaskResults[value]);
                 this.turnOff(answerField.id);
             });
         }
